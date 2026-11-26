@@ -78,7 +78,28 @@ def janken_play():
                            hand=hand,
                            cpu=cpu,
                            is_win=is_win)
+    
+    
 
+
+# 4. 占いアプリの入力フォーム
+@app.route('/uranai')
+def uranai():
+    return render_template('uranai_form.html')
+
+
+# 5. 占いデータ送信先と占い結果表示画面
+@app.route('/uranai/play', methods=["POST"])
+def uranai_play():
+    # <input type="text" id="your_name" name="name">
+    name = request.form.get("name", "")
+
+    # <input type="date" id="your_birthdate" name="birthdate">
+    birthdate = request.form.get("birthdate", "")
+
+    return render_template('uranai_play.html',
+                           name=name,
+                           birthdate=birthdate)
 
 if __name__ == '__main__':
     # portは適宜書き換えてください
