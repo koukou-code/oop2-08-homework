@@ -41,7 +41,11 @@
                 </figcaption>
             </figure>
         </section>
+        {% if is_win %}
+        <h2 style="color: red;">{{ result_message }}</h2>
+        {% else %}
         <h2>{{ result_message }}</h2>
+        {% endif %}
         <button type="button" onclick="window.history.back(); return false;">戻る</button>
     </main>
 </body>
