@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template
 import random # ランダムデータ作成のためのライブラリ
+from datetime import datetime # 日付を扱うためのライブラリ
 
 app = Flask(__name__)
 
@@ -92,14 +93,51 @@ def uranai():
 @app.route('/uranai/play', methods=["POST"])
 def uranai_play():
     # <input type="text" id="your_name" name="name">
-    name = request.form.get("name", "")
+    # 前後の空白を除去して、空白だけの名前も未入力として扱う
+    name = request.form.get("name", "").strip()
 
     # <input type="date" id="your_birthdate" name="birthdate">
     birthdate = request.form.get("birthdate", "")
 
+       # 占い結果（1〜5）ごとのメッセージ
+    messages = {
+        5: "今日は最強。……まぁ、調子に乗らなければね♡",
+        4: "悪くないじゃん。でも油断したら一瞬で転ぶよ♡",
+        3: "普通。可もなく不可もなく、いつも通りのあなたって感じ♡",
+        2: "ちょっと微妙だね。今日は大人しくしてた方がいいよ♡",
+        1: "今日はダメだね、諦めな♡ 布団に戻るのが正解だよ♡",
+    }
+
+    try:
+        # 名前が未入力なら入力不備
+        if not name:
+            raise ValueError("名前が未入力")
+
+        # 生年月日をyyyyMMdd形式の数値にする
+        # 未入力や日付に変換できない形式の場合は ValueError になる
+        birth_date = datetime.strptime(birthdate, "%Y-%m-%d")
+        birth_int = int(birth_date.strftime("%Y%m%d"))
+
+        # 現在日付をyyyyMMdd形式の数値にする
+        today_int = int(datetime.now().strftime("%Y%m%d"))
+
+        # 計算式：(|現在日付 - 生年月日| × 名前の文字数) を5で割った余りをインデックスにする
+        results_table = [5, 1, 3, 2, 4]
+        diff = abs(today_int - birth_int)
+        index = (diff * len(name)) % 5
+        uranai_rank = results_table[index]
+        message = messages[uranai_rank]
+
+    except ValueError:
+        # 入力不備の場合は、占い結果を1とする
+        uranai_rank = 1
+        message = "入力不備で占えませんでした"
+
     return render_template('uranai_play.html',
                            name=name,
-                           birthdate=birthdate)
+                           birthdate=birthdate,
+                           uranai_rank=uranai_rank,
+                           message=message)
 
 if __name__ == '__main__':
     # portは適宜書き換えてください
