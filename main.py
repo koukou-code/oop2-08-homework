@@ -32,6 +32,16 @@ def janken_play():
 
     # リストの中からランダムに選ぶ
     cpu = random.choice(["rock", "scissor", "paper"])
+    if request.form.get("is_settai") == "on":
+        if not hand:
+            hand = "rock"  # デフォルトはグー
+        # 接待モードではCPUは常に負ける手をだす。
+        if hand == "rock":
+            cpu = "scissor"
+        elif hand == "scissor":
+            cpu = "paper"
+        elif hand == "paper":
+            cpu = "rock"
 
     # じゃんけん処理
     if hand == cpu:
