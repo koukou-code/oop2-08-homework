@@ -30,6 +30,9 @@ def janken_play():
     # <input type="radio" id="hand_paper" value="paper" name="hand">
     hand = request.form.get("hand", None)
 
+    # プレイヤーが勝ったかどうか（勝ったときだけTrueにする）
+    is_win = False
+
     # リストの中からランダムに選ぶ
     cpu = random.choice(["rock", "scissor", "paper"])
     if request.form.get("is_settai") == "on":
@@ -50,16 +53,19 @@ def janken_play():
         if hand == "rock":
             if cpu == "scissor":
                 result_message = "{}の勝ち".format(name)
+                is_win = True
             else:
                 result_message = "{}の負け".format(name)
         elif hand == "scissor":
             if cpu == "paper":
                 result_message = "{}の勝ち".format(name)
+                is_win = True
             else:
                 result_message = "{}の負け".format(name)
         elif hand == "paper":
             if cpu == "rock":
                 result_message = "{}の勝ち".format(name)
+                is_win = True
             else:
                 result_message = "{}の負け".format(name)
         else:
@@ -70,7 +76,8 @@ def janken_play():
                            result_message=result_message,
                            name=name,
                            hand=hand,
-                           cpu=cpu)
+                           cpu=cpu,
+                           is_win=is_win)
 
 
 if __name__ == '__main__':
